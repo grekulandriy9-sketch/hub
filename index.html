@@ -4,169 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Настройки "Режима Проги" -->
+    <!-- Налаштування Режиму Проги (ховає браузер) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="HUB">
     
-    <title>HUB</title>
+    <title>HUB: Мій Контроль</title>
     
-    <!-- СТИЛЬНАЯ ИКОНКА (Черный фон + белый логотип) -->
+    <!-- СТИЛЬНА ІКОНКА -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com">
 
     <style>
         :root {
-            --bg: #000000;
-            --card-bg: #111111;
-            --accent: #ffffff;
-            --danger: #ff4d4d;
-            --border: #222222;
-            --text: #ffffff;
+            --bg: #000000; --card-bg: #111111; --accent: #ffffff;
+            --danger: #ff4d4d; --success: #00ff88; --border: #222222; --text: #ffffff;
         }
 
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); color: var(--text); 
-            margin: 0; padding: 60px 20px 40px;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg); color: var(--text); margin: 0; padding: 60px 20px 40px;
+            animation: fadeIn 0.6s ease-out;
         }
 
-        .container { max-width: 600px; margin: auto; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .container { max-width: 850px; margin: auto; position: relative; }
+
+        .action-sidebar { 
+            position: fixed; right: 30px; top: 100px; 
+            display: flex; flex-direction: column; gap: 15px; z-index: 100;
+        }
+
+        .btn { 
+            cursor: pointer; padding: 14px 20px; border: none; border-radius: 6px; 
+            font-weight: 900; text-transform: uppercase; font-size: 10px;
+            letter-spacing: 1px; transition: 0.3s; min-width: 170px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #ffffff 0%, #bbbbbb 100%); color: #000;
+        }
+        .btn-clear { background: linear-gradient(135deg, #333333 0%, #111111 100%); color: #fff; border: 1px solid #333; }
 
         .card { 
-            background: var(--card-bg); padding: 20px; border-radius: 16px; 
-            margin-bottom: 25px; border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: var(--card-bg); padding: 25px; border-radius: 12px; 
+            margin-bottom: 30px; border: 1px solid var(--border);
         }
 
-        h2 { margin: 0 0 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #555; }
+        h2 { margin-top: 0; font-size: 0.9rem; text-transform: uppercase; border-left: 3px solid #fff; padding-left: 12px; }
 
-        .progress-bar { height: 2px; background: #222; margin: 15px 0; border-radius: 2px; }
-        .progress-fill { height: 100%; background: #fff; width: 0%; transition: 0.8s ease; box-shadow: 0 0 10px #fff; }
-
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 10px 5px; border-bottom: 1px solid #1a1a1a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 12px; color: #555; font-size: 10px; text-transform: uppercase; }
+        td { padding: 12px 10px; border-bottom: 1px solid #1a1a1a; }
 
         input, select { 
             background: #080808; border: 1px solid #222; color: #fff; 
-            padding: 10px; border-radius: 8px; width: 100%; font-size: 16px;
-        }
-        input[type="checkbox"] { width: 22px; height: 22px; accent-color: #fff; }
-
-        .btn { 
-            background: #fff; color: #000; padding: 14px; border: none; 
-            border-radius: 10px; font-weight: 800; font-size: 12px;
-            text-transform: uppercase; cursor: pointer; width: 100%; margin-top: 15px;
+            padding: 10px; border-radius: 5px; width: 100%; box-sizing: border-box;
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .stat-item { background: #080808; padding: 15px; border-radius: 12px; border: 1px solid #1a1a1a; text-align: center; }
-        .stat-item label { font-size: 10px; color: #555; display: block; margin-bottom: 5px; }
-        .stat-item span { font-size: 18px; font-weight: bold; }
+        .progress-bar { height: 2px; background: #1a1a1a; margin: 20px 0; border-radius: 2px; }
+        .progress-fill { height: 100%; background: #fff; width: 0%; transition: 0.8s; box-shadow: 0 0 12px rgba(255,255,255,0.5); }
 
-        .row-done { opacity: 0.3; filter: grayscale(1); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 25px; }
+        .stat-box { background: #080808; padding: 15px; border-radius: 8px; border: 1px solid #1a1a1a; text-align: center; }
+        .stat-box label { font-size: 8px; color: #555; display: block; margin-bottom: 6px; }
+        .stat-box span { font-size: 18px; font-weight: bold; }
 
-        /* Кнопки управления вверху */
-        .top-actions { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-small { background: #222; color: #fff; padding: 8px; font-size: 10px; flex: 1; }
+        .priority-high { color: var(--danger) !important; font-weight: bold; }
+        .is-done { opacity: 0.25; text-decoration: line-through; filter: grayscale(1); }
+
+        @media (max-width: 1150px) {
+            .action-sidebar { position: static; flex-direction: row; margin-bottom: 25px; gap: 10px; }
+            .btn { min-width: auto; flex: 1; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-actions">
-        <button class="btn btn-small" onclick="archiveWeek()">ЗАКРИТИ ТИЖДЕНЬ</button>
-        <button class="btn btn-small" style="color:red" onclick="clearAll()">ВИДАЛИТИ ВСЕ</button>
+    <div class="action-sidebar">
+        <button class="btn" onclick="archiveWeek()">Закрити тиждень</button>
+        <button class="btn btn-clear" onclick="clearAll()">Видалити все</button>
+    </div>
+
+    <select id="mainCur" style="width: 100px; margin-bottom: 25px; font-weight: bold;" onchange="calc()">
+        <option value="₴">₴ UAH</option><option value="$">$ USD</option><option value="€">€ EUR</option>
+    </select>
+
+    <div class="card">
+        <h2>Задачі та Прогрес</h2>
+        <div class="progress-bar"><div id="progFill" class="progress-fill"></div></div>
+        <div style="font-size: 10px; font-weight: bold; color: #555;">ВИКОНАНО: <span id="percentText" style="color:#fff">0%</span></div>
+        <table>
+            <thead><tr><th style="width: 45%;">Назва</th><th>Дедлайн</th><th>Пріоритет</th><th style="text-align:center">Ок</th><th style="width: 30px;"></th></tr></thead>
+            <tbody id="tBody"></tbody>
+        </table>
+        <button style="background:none; border: 1px dashed #333; color: #888; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 10px; margin-top: 15px; width: 100%;" onclick="addT()">+ ДОДАТИ ЗАДАЧУ</button>
     </div>
 
     <div class="card">
-        <h2>ЗАДАЧІ</h2>
-        <div class="progress-bar"><div id="pFill" class="progress-fill"></div></div>
-        <table id="tTable"></table>
-        <button class="btn" onclick="addT()">+ ДОДАТИ ЗАДАЧУ</button>
-    </div>
-
-    <div class="card">
-        <h2>ФІНАНСИ</h2>
-        <table id="fTable"></table>
-        <button class="btn" onclick="addF()">+ ДОДАТИ ЗАПИС</button>
+        <h2>Фінансовий Облік</h2>
+        <table>
+            <thead><tr><th style="width: 25%;">Тип</th><th style="width: 20%;">Сума</th><th>Опис</th><th style="width: 30px;"></th></tr></thead>
+            <tbody id="fBody"></tbody>
+        </table>
+        <button style="background:none; border: 1px dashed #333; color: #888; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 10px; margin-top: 15px; width: 100%;" onclick="addF()">+ ДОДАТИ ЗАПИС</button>
         <div class="stats-grid">
-            <div class="stat-item">
-                <label>БОРГ</label>
-                <input type="number" id="baseDebt" value="0" oninput="calc()" style="border:none; text-align:center; font-size:20px;">
-            </div>
-            <div class="stat-item">
-                <label>ЗАЛИШОК</label>
-                <span id="debtLeft">0</span>
-            </div>
+            <div class="stat-box"><label>БОРГ</label><input type="number" id="baseD" value="0" oninput="calc()" style="text-align:center; font-size:18px; border:none; background:transparent; font-weight: bold; color: #fff;"></div>
+            <div class="stat-box"><label>ПРИХІД</label><span id="sIn">0</span></div>
+            <div class="stat-box"><label>ВИТРАТИ</label><span id="sOut">0</span></div>
+            <div class="stat-box"><label>ВІДДАНО</label><span id="sPaid" style="color:var(--success)">0</span></div>
+            <div class="stat-box"><label>ЗАЛИШОК</label><span id="sLeft">0</span></div>
         </div>
+    </div>
+
+    <div id="historySection" class="card" style="display:none; background: #080808;">
+        <h2>Архів тижнів</h2>
+        <div id="historyList" style="margin-top: 20px;"></div>
     </div>
 </div>
 
 <script>
-function addT(d={v1:'', v4:false}) {
-    const r = document.getElementById('tTable').insertRow();
-    if(d.v4) r.className = 'row-done';
-    r.innerHTML = `
-        <td style="width:85%"><input type="text" placeholder="..." value="${d.v1}" oninput="save()"></td>
-        <td align="right"><input type="checkbox" ${d.v4?'checked':''} onchange="this.parentElement.parentElement.classList.toggle('row-done', this.checked); calc()"></td>
-    `;
-    save();
+function addT(d={}) {
+    const r = document.getElementById('tBody').insertRow();
+    if(d.v4) r.classList.add('is-done');
+    r.innerHTML = `<td><input type="text" placeholder="..." value="${d.v1||''}" oninput="save()"></td>
+    <td><input type="date" value="${d.v2||''}" oninput="save()"></td>
+    <td><select onchange="updatePrioStyle(this); save()">
+        <option value="low" ${d.v3=='low'?'selected':''}>Низький</option>
+        <option value="mid" ${d.v3=='mid'?'selected':''}>Середній</option>
+        <option value="high" ${d.v3=='high'?'selected':''}>ТЕРМІНОВО</option>
+    </select></td>
+    <td align="center"><input type="checkbox" ${d.v4?'checked':''} onchange="this.parentElement.parentElement.classList.toggle('is-done', this.checked); calc()"></td>
+    <td><button style="background:none; border:none; color:#444; cursor:pointer;" onclick="this.parentElement.parentElement.remove();calc()">✕</button></td>`;
+    updatePrioStyle(r.querySelector('select'));
 }
 
-function addF(d={v1:'debt', v2:''}) {
-    const r = document.getElementById('fTable').insertRow();
-    r.innerHTML = `
-        <td style="width:30%"><select class="ft" onchange="calc()">
-            <option value="debt" ${d.v1==='debt'?'selected':''}>БОРГ</option>
-            <option value="in" ${d.v1==='in'?'selected':''}>+</option>
-            <option value="out" ${d.v1==='out'?'selected':''}>-</option>
-        </select></td>
-        <td><input type="number" class="fv" placeholder="Сума" value="${d.v2}" oninput="calc()"></td>
-    `;
-    save();
+function updatePrioStyle(sel) { sel.className = (sel.value === 'high') ? 'priority-high' : ''; }
+
+function addF(d={}) {
+    const r = document.getElementById('fBody').insertRow();
+    r.innerHTML = `<td><select class="ft" onchange="calc()">
+    <option value="in" ${d.v1=='in'?'selected':''}>Прихід</option>
+    <option value="out" ${d.v1=='out'?'selected':''}>Витрата</option>
+    <option value="debt" ${d.v1=='debt'?'selected':''}>Виплата боргу</option></select></td>
+    <td><input type="number" class="fv" value="${d.v2||''}" oninput="calc()"></td>
+    <td><input type="text" class="fn" value="${d.v3||''}" oninput="save()"></td>
+    <td><button style="background:none; border:none; color:#444; cursor:pointer;" onclick="this.parentElement.parentElement.remove();calc()">✕</button></td>`;
 }
 
 function calc() {
-    const tasks = document.querySelectorAll('#tTable input[type="checkbox"]');
+    const cur = document.getElementById('mainCur').value;
+    const tasks = document.querySelectorAll('#tBody input[type="checkbox"]');
     const done = Array.from(tasks).filter(t => t.checked).length;
-    document.getElementById('pFill').style.width = (tasks.length ? (done/tasks.length*100) : 0) + '%';
-
-    let paid = 0;
-    document.querySelectorAll('#fTable tr').forEach(r => {
-        if(r.querySelector('.ft').value === 'debt') paid += parseFloat(r.querySelector('.fv').value) || 0;
+    const p = tasks.length ? Math.round((done/tasks.length)*100) : 0;
+    document.getElementById('progFill').style.width = p+'%';
+    document.getElementById('percentText').innerText = p+'%';
+    let inc=0, exp=0, paid=0;
+    document.querySelectorAll('#fBody tr').forEach(r => {
+        const t = r.querySelector('.ft').value, v = parseFloat(r.querySelector('.fv').value)||0;
+        if(t==='in') inc+=v; else if(t==='out') exp+=v; else if(t==='debt') paid+=v;
     });
-
-    const base = parseFloat(document.getElementById('baseDebt').value) || 0;
-    document.getElementById('debtLeft').innerText = (base - paid).toLocaleString() + ' ₴';
+    const base = parseFloat(document.getElementById('baseD').value)||0;
+    document.getElementById('sIn').innerText = inc.toLocaleString() + ' ' + cur;
+    document.getElementById('sOut').innerText = exp.toLocaleString() + ' ' + cur;
+    document.getElementById('sPaid').innerText = paid.toLocaleString() + ' ' + cur;
+    document.getElementById('sLeft').innerText = (base - paid).toLocaleString() + ' ' + cur;
     save();
 }
 
 function save() {
     const data = {
-        base: document.getElementById('baseDebt').value,
+        cur: document.getElementById('mainCur').value, base: document.getElementById('baseD').value,
         t: Array.from(document.querySelectorAll('#tBody tr')).map(r => ({
-            v1: r.querySelector('input').value,
-            v4: r.querySelector('input[type="checkbox"]').checked
+            v1: r.cells.querySelector('input').value, v2: r.cells.querySelector('input').value,
+            v3: r.cells.querySelector('select').value, v4: r.cells.querySelector('input').checked
         })),
         f: Array.from(document.querySelectorAll('#fBody tr')).map(r => ({
-            v1: r.querySelector('.ft').value,
-            v2: r.querySelector('.fv').value
+            v1: r.querySelector('.ft').value, v2: r.querySelector('.fv').value, v3: r.querySelector('.fn').value
         }))
     };
     localStorage.setItem('hub_vfinal', JSON.stringify(data));
 }
 
-function archiveWeek() { if(confirm('Архівувати тиждень?')) { location.reload(); } }
-function clearAll() { if(confirm('Видалити все?')) { localStorage.clear(); location.reload(); } }
+function archiveWeek() {
+    if(!confirm('Закрити тиждень?')) return;
+    const hist = JSON.parse(localStorage.getItem('hub_h_final') || '[]');
+    hist.unshift({
+        date: new Date().toLocaleDateString(), prog: document.getElementById('percentText').innerText,
+        in: document.getElementById('sIn').innerText, out: document.getElementById('sOut').innerText,
+        paid: document.getElementById('sPaid').innerText, left: document.getElementById('sLeft').innerText
+    });
+    localStorage.setItem('hub_h_final', JSON.stringify(hist));
+    document.getElementById('tBody').innerHTML = ''; document.getElementById('fBody').innerHTML = '';
+    document.getElementById('baseD').value = parseFloat(document.getElementById('sLeft').innerText.replace(/\s/g, ''));
+    calc(); renderHistory();
+}
+
+function renderHistory() {
+    const hist = JSON.parse(localStorage.getItem('hub_h_final') || '[]');
+    if(!hist.length) return;
+    document.getElementById('historySection').style.display='block';
+    document.getElementById('historyList').innerHTML = hist.map(h => `
+        <div style="padding:15px; border:1px solid #1a1a1a; margin-bottom:10px; border-radius:8px; background:#050505">
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:10px">
+                <b>ЗВІТ: ${h.date}</b><span style="color:var(--success)">${h.prog} SUCCESS</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); font-size:9px; color:#444">
+                <div>ДОХІД<br><b style="color:#fff">${h.in}</b></div>
+                <div>ВИТРАТИ<br><b style="color:#fff">${h.out}</b></div>
+                <div>ВІДДАНО<br><b style="color:#fff">${h.paid}</b></div>
+                <div>ЗАЛИШОК<br><b style="color:#fff">${h.left}</b></div>
+            </div>
+        </div>`).join('');
+}
 
 window.onload = () => {
     const s = JSON.parse(localStorage.getItem('hub_vfinal'));
-    if(s) document.getElementById('baseDebt').value = s.base;
-    addT(); addF(); calc();
-}
+    if(s) {
+        document.getElementById('mainCur').value = s.cur; document.getElementById('baseD').value = s.base;
+        s.t.forEach(x => addT(x)); s.f.forEach(x => addF(x));
+    } else { addT(); addF(); }
+    renderHistory(); calc();
+};
+
+function clearAll() { if(confirm('Видалити все?')) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
